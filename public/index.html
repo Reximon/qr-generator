@@ -61,6 +61,17 @@
       width: 100%;
     }
     button:hover { opacity: 0.85; }
+    .download-btn {
+      display: inline-block;
+      margin-top: 1rem;
+      padding: 0.5rem 1.25rem;
+      background: var(--accent);
+      color: white;
+      border-radius: 8px;
+      text-decoration: none;
+      font-size: 0.9rem;
+    }
+    .download-btn:hover { opacity: 0.85; }
     #qr-container { margin-top: 1.5rem; }
     img { max-width: 100%; border-radius: 8px; }
     #error { color: #ef4444; margin-top: 1rem; }
@@ -90,11 +101,14 @@
         if (!res.ok) throw new Error("Error al generar QR");
         const blob = await res.blob();
         const url = URL.createObjectURL(blob);
-        container.innerHTML = `<img src="${url}" alt="QR Code" />`;
+        container.innerHTML = `<img src="${url}" alt="QR Code" /><br /><a href="${url}" download="qr.png" class="download-btn">Descargar QR</a>`;
       } catch (e) {
         error.textContent = e.message;
         container.innerHTML = "";
       }
+    });
+    input.addEventListener("keypress", (e) => {
+      if (e.key === "Enter") btn.click();
     });
   </script>
 </body>

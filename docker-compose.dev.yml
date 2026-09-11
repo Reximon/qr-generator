@@ -1,0 +1,22 @@
+services:
+  app:
+    profiles:
+      - dev
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: dev
+    command: npm run dev
+    ports:
+      - "3000:3000"
+    volumes:
+      - .:/app
+    environment:
+      - PORT=3000
+      - NODE_ENV=development
+    networks:
+      - qr-network
+
+networks:
+  qr-network:
+    driver: bridge
