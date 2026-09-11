@@ -14,7 +14,10 @@ app.get("/health", (_req, res) => {
     res.json({ status: "ok", uptime: process.uptime() });
 });
 
-app.listen(PORT, () => {
-    console.log(`Servidor corriendo en http://localhost:${PORT}`);
-});
+if (require.main === module) {
+    app.listen(PORT, () => {
+        console.log(`Servidor corriendo en http://localhost:${PORT}`);
+    });
+}
 
+export default app;
