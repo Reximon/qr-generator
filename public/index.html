@@ -128,9 +128,9 @@
     .stamp-frame {
       position: relative;
       display: inline-block;
-      padding: 16px;
+      flex-direction: column;      padding: 16px;
       border: 2px solid #2C1810;
-    }
+    }   
     .stamp-frame .corner {
       position: absolute;
       width: 12px; height: 12px;
@@ -138,6 +138,13 @@
       border-style: solid;
       opacity: 0.6;
     }
+    #qr-container {
+    flex: content;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    }
+
     .stamp-frame .corner.tl { top: 5px; left: 5px; border-width: 2px 0 0 2px; }
     .stamp-frame .corner.tr { top: 5px; right: 5px; border-width: 2px 2px 0 0; }
     .stamp-frame .corner.bl { bottom: 5px; left: 5px; border-width: 0 0 2px 2px; }
