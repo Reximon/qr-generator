@@ -4,121 +4,311 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>QR Generator</title>
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;700&family=Space+Grotesk:wght@300;500;700&display=swap" rel="stylesheet">
   <style>
-    :root {
-      --bg: #f5f5f5;
-      --card: #ffffff;
-      --text: #1a1a1a;
-      --accent: #2563eb;
-      --border: #ddd;
-    }
-    @media (prefers-color-scheme: dark) {
-      :root {
-        --bg: #1a1a2e;
-        --card: #16213e;
-        --text: #e0e0e0;
-        --accent: #60a5fa;
-        --border: #333;
-      }
-    }
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
-      font-family: system-ui, sans-serif;
-      background: var(--bg);
-      color: var(--text);
+      font-family: 'Space Grotesk', sans-serif;
+      background: #F5F1E8;
+      color: #2C1810;
+      min-height: 100vh;
       display: flex;
       justify-content: center;
       align-items: center;
-      min-height: 100vh;
+      padding: 2rem;
+    }
+    .page {
+      max-width: 500px;
+      width: 100%;
+    }
+    .header {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+    .header h1 {
+      font-family: 'Caveat', cursive;
+      font-size: 2.5rem;
+      font-weight: 700;
+      color: #2C1810;
+    }
+    .header p {
+      font-size: 0.95rem;
+      color: #8B7355;
+      margin-top: 0.25rem;
     }
     .card {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 12px;
+      background: #FFF8E7;
+      border: 2px solid #2C1810;
+      border-radius: 4px;
       padding: 2rem;
-      max-width: 400px;
-      width: 90%;
-      text-align: center;
+      position: relative;
     }
-    input {
-      width: 100%;
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 8px; left: 8px; right: 8px; bottom: 8px;
+      border: 1px dashed #C9A96E;
+      border-radius: 2px;
+      pointer-events: none;
+    }
+    .type-selector {
+      display: flex;
+      gap: 0.75rem;
+      margin-bottom: 1.5rem;
+    }
+    .type-btn {
+      flex: 1;
       padding: 0.75rem;
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      font-size: 1rem;
-      margin-bottom: 1rem;
-      background: var(--bg);
-      color: var(--text);
-    }
-    button {
-      background: var(--accent);
-      color: white;
-      border: none;
-      padding: 0.75rem 1.5rem;
-      border-radius: 8px;
-      font-size: 1rem;
+      border: 2px solid #2C1810;
+      background: #FFF8E7;
+      color: #2C1810;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 0.85rem;
+      font-weight: 600;
       cursor: pointer;
-      width: 100%;
+      border-radius: 2px;
+      transition: all 0.15s;
     }
-    button:hover { opacity: 0.85; }
+    .type-btn:hover { background: #2C1810; color: #FFF8E7; }
+    .type-btn.active { background: #2C1810; color: #FFF8E7; }
+    .field-group { margin-bottom: 1rem; }
+    .field-group label {
+      display: block;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: #8B7355;
+      margin-bottom: 0.35rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .field-group input {
+      width: 100%;
+      padding: 0.7rem 0.85rem;
+      border: 2px solid #2C1810;
+      background: #F5F1E8;
+      color: #2C1810;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 0.95rem;
+      outline: none;
+    }
+    .field-group input:focus { border-color: #C9A96E; }
+    .field-group input::placeholder { color: #A09080; }
+    .wifi-fields { display: none; }
+    .wifi-fields.visible { display: block; }
+    .text-fields { display: block; }
+    .text-fields.hidden { display: none; }
+    select.field-group input, .field-group select {
+      width: 100%;
+      padding: 0.7rem 0.85rem;
+      border: 2px solid #2C1810;
+      background: #F5F1E8;
+      color: #2C1810;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 0.95rem;
+      outline: none;
+    }
+    button#generate {
+      width: 100%;
+      padding: 0.85rem;
+      background: #2C1810;
+      color: #FFF8E7;
+      border: none;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 0.9rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      cursor: pointer;
+      margin-top: 1.25rem;
+    }
+    button#generate:hover { background: #8B4513; }
+    button#generate:disabled { opacity: 0.5; cursor: not-allowed; }
+    #error { color: #C44536; font-size: 0.8rem; margin-top: 0.75rem; display: none; }
+    #output-area { display: none; margin-top: 1.5rem; text-align: center; }
+    .stamp-frame {
+      position: relative;
+      display: inline-block;
+      flex-direction: column;      padding: 16px;
+      border: 2px solid #2C1810;
+    }   
+    .stamp-frame .corner {
+      position: absolute;
+      width: 12px; height: 12px;
+      border-color: #C9A96E;
+      border-style: solid;
+      opacity: 0.6;
+    }
+    #qr-container {
+    flex: content;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    }
+
+    .stamp-frame .corner.tl { top: 5px; left: 5px; border-width: 2px 0 0 2px; }
+    .stamp-frame .corner.tr { top: 5px; right: 5px; border-width: 2px 2px 0 0; }
+    .stamp-frame .corner.bl { bottom: 5px; left: 5px; border-width: 0 0 2px 2px; }
+    .stamp-frame .corner.br { bottom: 5px; right: 5px; border-width: 0 2px 2px 0; }
+    #qr-container img { max-width: 180px; }
     .download-btn {
       display: inline-block;
-      margin-top: 1rem;
+      margin-top: 0.75rem;
       padding: 0.5rem 1.25rem;
-      background: var(--accent);
-      color: white;
-      border-radius: 8px;
+      background: transparent;
+      color: #2C1810;
+      border: 2px solid #2C1810;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
       text-decoration: none;
-      font-size: 0.9rem;
+      cursor: pointer;
     }
-    .download-btn:hover { opacity: 0.85; }
-    #qr-container { margin-top: 1.5rem; }
-    img { max-width: 100%; border-radius: 8px; }
-    #error { color: #ef4444; margin-top: 1rem; }
+    .download-btn:hover { background: #2C1810; color: #FFF8E7; }
+    .loader {
+      display: inline-block;
+      width: 24px; height: 24px;
+      border: 3px solid #2C1810;
+      border-top-color: #C9A96E;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    footer {
+      text-align: center;
+      margin-top: 2rem;
+      font-family: 'Caveat', cursive;
+      font-size: 1rem;
+      color: #8B7355;
+    }
   </style>
 </head>
 <body>
-  <div class="card">
-    <h1>QR Generator</h1>
-    <input type="text" id="text" placeholder="Escribe un texto o URL" />
-    <button id="generate">Generar QR</button>
-    <div id="error"></div>
-    <div id="qr-container"></div>
-  </div>
-  <script>
-    const input = document.getElementById("text");
-    const btn = document.getElementById("generate");
-    const container = document.getElementById("qr-container");
-    const error = document.getElementById("error");
+  <div class="page">
+    <div class="header">
+      <h1>QR Generator</h1>
+      <p>Crea tu código QR personalizado</p>
+    </div>
+    <div class="card">
+      <div class="type-selector">
+        <button class="type-btn active" data-type="text" id="btn-text">Texto</button>
+        <button class="type-btn" data-type="wifi" id="btn-wifi">WiFi</button>
+      </div>
 
-    function ensureUrl(text) {
-      if (text.startsWith("http://") || text.startsWith("https://")) {
-          return text;
-        }
-        return "https://" + text;
+      <div class="text-fields" id="text-fields">
+        <div class="field-group">
+          <label for="text">Texto o URL</label>
+          <input type="text" id="text" placeholder="https://ejemplo.com" autocomplete="off" />
+        </div>
+      </div>
+
+      <div class="wifi-fields" id="wifi-fields">
+        <div class="field-group">
+          <label for="ssid">SSID</label>
+          <input type="text" id="ssid" placeholder="MiRedWiFi" />
+        </div>
+        <div class="field-group">
+          <label for="password">Contraseña</label>
+          <input type="password" id="password" placeholder="contraseña" />
+        </div>
+        <div class="field-group">
+          <label for="encryption">Cifrado</label>
+          <select id="encryption">
+            <option value="WPA">WPA/WPA2</option>
+            <option value="WEP">WEP</option>
+            <option value="nop">None (sin cifrado)</option>
+          </select>
+        </div>
+      </div>
+
+      <button id="generate">Generar QR</button>
+      <div id="error"></div>
+      <div id="output-area">
+        <div class="stamp-frame">
+          <span class="corner tl"></span>
+          <span class="corner tr"></span>
+          <span class="corner bl"></span>
+          <span class="corner br"></span>
+          <div id="qr-container"></div>
+        </div>
+      </div>
+    </div>
+    <footer>Hecho con ♥ y código</footer>
+  </div>
+
+  <script>
+    const btnText = document.getElementById("btn-text");
+    const btnWifi = document.getElementById("btn-wifi");
+    const textFields = document.getElementById("text-fields");
+    const wifiFields = document.getElementById("wifi-fields");
+    const generateBtn = document.getElementById("generate");
+    const textInput = document.getElementById("text");
+    const ssidInput = document.getElementById("ssid");
+    const passwordInput = document.getElementById("password");
+    const encryptionSelect = document.getElementById("encryption");
+    const qrContainer = document.getElementById("qr-container");
+    const errorDiv = document.getElementById("error");
+    const outputArea = document.getElementById("output-area");
+
+    let currentType = "text";
+
+    function ensureUrl(t) {
+      if (t.startsWith("http://") || t.startsWith("https://")) return t;
+      return "https://" + t;
     }
 
-    btn.addEventListener("click", async () => {
-      let text = input.value.trim();
-      text = ensureUrl(text);
+    function setLoading(v) {
+      generateBtn.disabled = v;
+      if (v) qrContainer.innerHTML = '<div class="loader"></div>';
+    }
 
-      if (!text) return;
-      error.textContent = "";
-      container.innerHTML = "<p>Cargando...</p>";
+    function switchType(type) {
+      currentType = type;
+      btnText.classList.toggle("active", type === "text");
+      btnWifi.classList.toggle("active", type === "wifi");
+      textFields.classList.toggle("hidden", type === "wifi");
+      wifiFields.classList.toggle("visible", type === "wifi");
+    }
+
+    btnText.addEventListener("click", () => switchType("text"));
+    btnWifi.addEventListener("click", () => switchType("wifi"));
+
+    generateBtn.addEventListener("click", async () => {
+      errorDiv.style.display = "none";
+      setLoading(true);
+      outputArea.style.display = "block";
       try {
-        const res = await fetch(`/api/qr?text=${encodeURIComponent(text)}`);
+        let url;
+        if (currentType === "wifi") {
+          const ssid = ssidInput.value.trim();
+          const pass = passwordInput.value.trim();
+          const enc = encryptionSelect.value;
+          if (!ssid) throw new Error("Falta el SSID");
+          const params = new URLSearchParams({ type: "wifi", ssid, password: pass, encryption: enc });
+          url = "/api/qr?" + params.toString();
+        } else {
+          let t = textInput.value.trim();
+          if (!t) throw new Error("Escribe un texto o URL");
+          t = ensureUrl(t);
+          url = "/api/qr?" + new URLSearchParams({ type: "text", text: t }).toString();
+        }
+        const res = await fetch(url);
         if (!res.ok) throw new Error("Error al generar QR");
         const blob = await res.blob();
-        const url = URL.createObjectURL(blob);
-        container.innerHTML = `<img src="${url}" alt="QR Code" /><br /><a href="${url}" download="qr.png" class="download-btn">Descargar QR</a>`;
+        const blobUrl = URL.createObjectURL(blob);
+        qrContainer.innerHTML = '<img src="' + blobUrl + '" alt="QR Code" /><a href="' + blobUrl + '" download="qr.png" class="download-btn">Descargar QR</a>';
       } catch (e) {
-        error.textContent = e.message;
-        container.innerHTML = "";
+        errorDiv.textContent = e.message;
+        errorDiv.style.display = "block";
+        outputArea.style.display = "none";
+      } finally {
+        setLoading(false);
       }
     });
-    input.addEventListener("keypress", (e) => {
-      if (e.key === "Enter") btn.click();
-    });
+
+    textInput.addEventListener("keypress", (e) => { if (e.key === "Enter") generateBtn.click(); });
+    ssidInput.addEventListener("keypress", (e) => { if (e.key === "Enter") generateBtn.click(); });
   </script>
 </body>
 </html>
