@@ -19,5 +19,5 @@ export async function generateQRBase64(text:string, type:string = "text"): Promi
 
 export function formatWiFiQR(ssid:string, password:string, encryption:string): string {
     const enc = encryption === "WEP" ? "WEP" : "WPA";
-    return `WIFI:T:${enc};S:${ssid};P:${password};;`;
+    return `WIFI:T:${enc};S:${ssid};;`;
 }
