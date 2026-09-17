@@ -46,7 +46,21 @@
         else {
           data.qrCodes.forEach(q => {
             const tr = document.createElement('tr');
-            tr.innerHTML = '<td>' + q.code + '</td><td>' + q.visits + '</td><td>' + new Date(q.createdAt).toLocaleDateString() + '</td><td><a href="' + q.url + '">' + q.url + '</a></td>';
+            const tdCode = document.createElement('td');
+            tdCode.textContent = q.code;
+            const tdVisits = document.createElement('td');
+            tdVisits.textContent = q.visits;
+            const tdDate = document.createElement('td');
+            tdDate.textContent = new Date(q.createdAt).toLocaleDateString();
+            const tdUrl = document.createElement('td');
+            const a = document.createElement('a');
+            a.href = q.url;
+            a.textContent = q.url;
+            tdUrl.appendChild(a);
+            tr.appendChild(tdCode);
+            tr.appendChild(tdVisits);
+            tr.appendChild(tdDate);
+            tr.appendChild(tdUrl);
             tbody.appendChild(tr);
           });
         }
