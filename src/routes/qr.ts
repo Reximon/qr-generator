@@ -2,7 +2,7 @@ import { Router, Request, Response } from "express";
 import { generateQR, generateQRBase64, formatWiFiQR } from "../utils/qrGenerator";
 
 const router = Router();
-router.get("/", async (req: Request, res: Response) => {
+router.post("/", async (req: Request, res: Response) => {
     const type = (req.query.type as string) || "text";
     const text = req.query.text as string;
     const ssid = req.query.ssid as string | undefined;
@@ -17,7 +17,7 @@ router.get("/", async (req: Request, res: Response) => {
     try {
         let qrData: string;
         if (type === "wifi") {
-            qrData = formatWiFiQR(ssid!, password!, encryption);
+            qrData = formatWiFiQR(ssid!, password || "", encryption);
         } else {
             qrData = text;
         }
