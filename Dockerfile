@@ -15,7 +15,9 @@ CMD ["npm", "run", "dev"]
 
 FROM node:20-slim AS production
 WORKDIR /app
-RUN addgroup -g 1001 -S appgroup && adduser -S appuser -u 1001
+RUN apt-get update && apt-get install -y --no-install-recommends curl && rm -rf /var/lib/apt/lists/* \
+    && addgroup --system --gid 1001 appgroup \
+    && adduser --system --uid 1001 --ingroup appgroup appuser
 COPY package*.json ./
 RUN npm ci --only=production
 COPY --from=builder /app/dist ./dist
