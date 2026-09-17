@@ -17,7 +17,7 @@ router.get("/", async (req: Request, res: Response) => {
     try {
         let qrData: string;
         if (type === "wifi") {
-            qrData = formatWiFiQR(ssid!, password!, encryption);
+            qrData = formatWiFiQR(ssid!, password || "", encryption);
         } else {
             qrData = text;
         }
