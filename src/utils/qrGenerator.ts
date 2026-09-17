@@ -17,7 +17,15 @@ export async function generateQRBase64(text:string, type:string = "text"): Promi
     return base64;
 }
 
+function escapeWiFi(value: string): string {
+    return value.replace(/([\\;:,"])/g, "\\$1");
+}
+
 export function formatWiFiQR(ssid:string, password:string, encryption:string): string {
-    const enc = encryption === "WEP" ? "WEP" : "WPA";
-    return `WIFI:T:${enc};S:${ssid};;`;
+    const enc = encryption === "WEP" ? "WEP" : encryption === "nop" ? "nop" : "WPA";
+    const ssidE = escapeWiFi(ssid);
+    if (enc === "nop") {
+        return `WIFI:T:nop;S:${ssidE};;`;
+    }
+    return `WIFI:T:${enc};S:${ssidE};P:${escapeWiFi(password)};;`;
 }
